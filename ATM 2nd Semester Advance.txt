@@ -1,0 +1,835 @@
+#include <iostream>
+#include <iomanip>
+#include <conio.h>
+#include <windows.h>
+using namespace std;
+
+string pass = "1234";
+double balance = 0;
+int selectedLanguage;
+
+// Helper for number validation (no additional libraries!)
+bool isNumber(const string& s) {
+    if (s.empty()) return false;
+    for (size_t i = 0; i < s.size(); ++i)
+        if (!isdigit(s[i])) return false;
+    return true;
+}
+
+void clearScreen() { system("cls"); }
+void setColor(int color) { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color); }
+
+void showHeader() {
+    setColor(11);
+    if(selectedLanguage == 2) {
+        cout << "\n" << setw(86) << "==============================================\n"
+             << setw(80) << "      |  SMART ATM SYSTEM MAIN KHU SHUKRIYA  |\n"
+             << setw(86) << "   ==============================================\n\n";
+    } else {
+        cout << "\n" << setw(86) << "==============================================\n"
+             << setw(80) << "      |  WELCOME TO SMART ATM SYSTEM  |\n"
+             << setw(86) << "   ==============================================\n\n";
+    }
+    setColor(7);
+}
+
+void pressKey() {
+    setColor(8);
+    if(selectedLanguage == 2) {
+        cout << "\n\nAgla amal jaari rakhne ke liye koi bhi key dabayein...";
+    } else {
+        cout << "\n\nPress any key to continue...";
+    }
+    getch();
+}
+
+void insertCard() {
+    setColor(10);
+    if(selectedLanguage == 2) {
+        cout << "\nCard dastiyabi se insert ho gaya!";
+    } else {
+        cout << "\nCard inserted successfully!";
+    }
+    Sleep(1000);
+    clearScreen();
+}
+
+void scanThumb() {
+    setColor(10);
+    if(selectedLanguage == 2) {
+        cout << "\nThumb safalta se scan ho gaya!";
+    } else {
+        cout << "\nThumb scanned successfully!";
+    }
+    Sleep(1000);
+    clearScreen();
+}
+
+void payUtilityBill(const string& type, int minLen, int maxLen) {
+    string id;
+    double amount;
+    if(selectedLanguage == 2) {
+        cout << "\nDarj karein " << type << " Reference/Customer Number (" << minLen << "-" << maxLen << " hase)";
+    } else {
+        cout << "\nEnter " << type << " Reference/Customer Number (" << minLen << "-" << maxLen << " digits): ";
+    }
+    cin >> id;
+    int len = id.length();
+    if (len < minLen || len > maxLen) {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nGhalat " << type << " Reference/Customer Number!";
+        } else {
+            cout << "\nInvalid " << type << " Reference/Customer Number!";
+        }
+        pressKey();
+        return;
+    }
+    if(selectedLanguage == 2) {
+        cout << "Bill ki raqam darj karein: $";
+    } else {
+        cout << "Enter Bill Amount: $";
+    }
+    cin >> amount;
+    if (amount > balance) {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nBalance nakafi hai!";
+        } else {
+            cout << "\nInsufficient balance!";
+        }
+    } else {
+        balance -= amount;
+        setColor(10);
+        if(selectedLanguage == 2) {
+            cout << "\n" << type << " Bill safalta se ada ho gaya! Naya balance: $" << balance;
+        } else {
+            cout << "\n" << type << " Bill paid successfully! New balance: $" << balance;
+        }
+    }
+    pressKey();
+}
+
+void makePayment() {
+    while (true) {
+        clearScreen();
+        showHeader();
+        setColor(14);
+        if(selectedLanguage == 2) {
+            cout << "\n\t\t\t\t\t\t\tAdaigi Karein:\n\n";
+        } else {
+            cout << "\n\t\t\t\t\t\t\tMake a Payment:\n\n";
+        }
+        setColor(10);
+        if(selectedLanguage == 2) {
+            cout << " \t\t 1. Utility Bill Adaigi\n\n";
+            cout << " \t\t 2. Credit Card Bill Adaigi\n\n";
+            cout << " \t\t 3. Mobile Top-Up\n\n";
+            cout << " \t\t 4. School Fee Adaigi\n\n";
+            cout << " \t\t 5. Loan Payment\n\n";
+            cout << " \t\t 6. Wapas\n\n";
+        } else {
+            cout << " \t\t 1. Utility Bill\n\n";
+            cout << " \t\t 2. Credit Card Bill\n\n";
+            cout << " \t\t 3. Mobile Top-Up\n\n";
+            cout << " \t\t 4. School Fee\n\n";
+            cout << " \t\t 5. Loan Payment\n\n";
+            cout << " \t\t 6. Back\n\n";
+        }
+        setColor(11);
+        if(selectedLanguage == 2) {
+            cout << "\nApna intikhab darj karein: ";
+        } else {
+            cout << "\nEnter your choice: ";
+        }
+        // Input validation for menu choice
+        string tempInput;
+        int opt;
+        while (true) {
+            cin >> tempInput;
+            if (isNumber(tempInput)) {
+                opt = stoi(tempInput);
+                if (opt >= 1 && opt <= 6) break;
+            }
+            setColor(12);
+            if(selectedLanguage==2)
+                cout << "\nGhalat intikhab! Dobara koshish karein: ";
+            else
+                cout << "\nInvalid option! Please try again: ";
+            setColor(11);
+        }
+        if (opt == 6) return;
+
+        double amount;
+        string id;
+
+        if (opt == 1) {
+            while (true) {
+                clearScreen();
+                showHeader();
+                setColor(14);
+                if(selectedLanguage == 2) {
+                    cout << "\n\t\t\tUtility Bill Adaigi:\n\n";
+                    setColor(10);
+                    cout << " 1. Bijli (8-14 hase)\n";
+                    cout << " 2. Gas (10 hase)\n";
+                    cout << " 3. Pani (8-12 hase)\n";
+                    cout << " 4. Telephone/Internet (10-11 hase)\n";
+                    cout << " 5. Wapas\n\n";
+                    setColor(11);
+                    cout << "Utility Type ka intikhab karein: ";
+                } else {
+                    cout << "\n\t\t\tUtility Bill Payment:\n\n";
+                    setColor(10);
+                    cout << " 1. Electricity (8-14 digits)\n";
+                    cout << " 2. Gas (10 digits)\n";
+                    cout << " 3. Water (8-12 digits)\n";
+                    cout << " 4. Telephone/Internet (10-11 digits)\n";
+                    cout << " 5. Back\n\n";
+                    setColor(11);
+                    cout << "Select Utility Type: ";
+                }
+                int utilityOpt;
+                string tempInput2;
+                while (true) {
+                    cin >> tempInput2;
+                    if (isNumber(tempInput2)) {
+                        utilityOpt = stoi(tempInput2);
+                        if (utilityOpt >= 1 && utilityOpt <= 5) break;
+                    }
+                    setColor(12);
+                    if(selectedLanguage==2)
+                        cout << "\nGhalat intikhab! Dobara koshish karein: ";
+                    else
+                        cout << "\nInvalid option! Please try again: ";
+                    setColor(11);
+                }
+                if (utilityOpt == 5) break;
+
+                switch (utilityOpt) {
+                    case 1: payUtilityBill(selectedLanguage == 2 ? "Bijli" : "Electricity", 8, 14); break;
+                    case 2: payUtilityBill(selectedLanguage == 2 ? "Gas" : "Gas", 10, 10); break;
+                    case 3: payUtilityBill(selectedLanguage == 2 ? "Pani" : "Water", 8, 12); break;
+                    case 4: payUtilityBill(selectedLanguage == 2 ? "Telephone/Internet" : "Telephone/Internet", 10, 11); break;
+                }
+            }
+        }
+        else if (opt == 2) {
+            clearScreen();
+            showHeader();
+            setColor(14);
+            if(selectedLanguage == 2) {
+                cout << "\n\t\t\tCredit Card Bill Adaigi:\n\n";
+                setColor(11);
+
+                string cardNumber;
+                cout << "Credit Card Number darj karein (16 hase): ";
+                cin >> cardNumber;
+
+                if (cardNumber.length() != 16) {
+                    setColor(12);
+                    cout << "\nGhalat Credit Card Number!";
+                    pressKey();
+                    return;
+                }
+
+                cout << "Bill ki raqam darj karein: $";
+                cin >> amount;
+
+                if (amount > balance) {
+                    setColor(12);
+                    cout << "\nBalance nakafi hai!";
+                } else {
+                    balance -= amount;
+                    setColor(10);
+                    cout << "\nCredit Card Bill $" << amount << " safalta se ada ho gaya. Baqi balance: $" << balance;
+                }
+
+                pressKey();
+            } else {
+                cout << "\n\t\t\tCredit Card Bill Payment:\n\n";
+                setColor(11);
+
+                string cardNumber;
+                cout << "Enter Credit Card Number (16 digits): ";
+                cin >> cardNumber;
+
+                if (cardNumber.length() != 16) {
+                    setColor(12);
+                    cout << "\nInvalid Credit Card Number!";
+                    pressKey();
+                    return;
+                }
+
+                cout << "Enter Bill Amount: $";
+                cin >> amount;
+
+                if (amount > balance) {
+                    setColor(12);
+                    cout << "\nInsufficient balance!";
+                } else {
+                    balance -= amount;
+                    setColor(10);
+                    cout << "\nCredit Card Bill of $" << amount << " paid successfully. Remaining balance: $" << balance;
+                }
+
+                pressKey();
+            }
+        }
+        else {
+            setColor(12);
+            if(selectedLanguage == 2) {
+                cout << "\nGhalat intikhab!";
+            } else {
+                cout << "\nInvalid option!";
+            }
+            pressKey();
+        }
+    }
+}
+
+void transferFunds() {
+    clearScreen();
+    showHeader();
+    setColor(14);
+    if(selectedLanguage == 2) {
+        cout << "\n\t\t\tFund Transfer:\n\n";
+        setColor(11);
+
+        string senderCard, receiverAccount;
+        double amount;
+
+        cout << "Apna Card Number darj karein (16 hase): ";
+        cin >> senderCard;
+
+        if (senderCard.length() != 16) {
+            setColor(12);
+            cout << "\nGhalat Card Number! Sirf 16 hase honi chahiye.";
+            pressKey();
+            return;
+        }
+
+        cout << "Receiver Account Number darj karein (16 hase): ";
+        cin >> receiverAccount;
+
+        if (receiverAccount.length() != 16) {
+            setColor(12);
+            cout << "\nGhalat Account Number! Sirf 16 hase honi chahiye.";
+            pressKey();
+            return;
+        }
+
+        cout << "Transfer ki raqam darj karein: $";
+        cin >> amount;
+
+        if (amount <= 0) {
+            setColor(12);
+            cout << "\nGhalat raqam!";
+        }
+        else if (amount > balance) {
+            setColor(12);
+            cout << "\nBalance nakafi hai!";
+        }
+        else {
+            balance -= amount;
+            setColor(10);
+            cout << "\nSafalta se $" << amount
+                 << " transfer ho gaya account number " << receiverAccount
+                 << " par card number " << senderCard << " ka istemal kar ke.\nBaqi balance: $" << balance;
+        }
+
+        pressKey();
+    } else {
+        cout << "\n\t\t\tFund Transfer:\n\n";
+        setColor(11);
+
+        string senderCard, receiverAccount;
+        double amount;
+
+        cout << "Enter Your Card Number (16 digits): ";
+        cin >> senderCard;
+
+        if (senderCard.length() != 16) {
+            setColor(12);
+            cout << "\nInvalid Card Number! Must be exactly 16 digits.";
+            pressKey();
+            return;
+        }
+
+        cout << "Enter Receiver Account Number (16 digits): ";
+        cin >> receiverAccount;
+
+        if (receiverAccount.length() != 16) {
+            setColor(12);
+            cout << "\nInvalid Account Number! Must be exactly 16 digits.";
+            pressKey();
+            return;
+        }
+
+        cout << "Enter Transfer Amount: $";
+        cin >> amount;
+
+        if (amount <= 0) {
+            setColor(12);
+            cout << "\nInvalid amount!";
+        }
+        else if (amount > balance) {
+            setColor(12);
+            cout << "\nInsufficient balance!";
+        }
+        else {
+            balance -= amount;
+            setColor(10);
+            cout << "\nSuccessfully transferred $" << amount
+                 << " to account number " << receiverAccount
+                 << " using card number " << senderCard << ".\nRemaining balance: $" << balance;
+        }
+
+        pressKey();
+    }
+}
+
+void checkBalance() {
+    clearScreen();
+    showHeader();
+    setColor(10);
+    if(selectedLanguage == 2) {
+        cout << "\nBalance: $" << balance;
+    } else {
+        cout << "\nBalance: $" << balance;
+    }
+    pressKey();
+}
+
+void deposit() {
+    clearScreen();
+    showHeader();
+    setColor(11);
+    if(selectedLanguage == 2) {
+        cout << "\nJama karne ki raqam darj karein: $";
+    } else {
+        cout << "\nDeposit amount: $";
+    }
+    double amount;
+    cin >> amount;
+    if (amount > 0) {
+        balance += amount;
+        setColor(10);
+        if(selectedLanguage == 2) {
+            cout << "\nJama safalta se ho gaya!\n Naya balance: $" << balance;
+        } else {
+            cout << "\nDeposit success!\n New balance: $" << balance;
+        }
+    } else {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nGhalat raqam!";
+        } else {
+            cout << "\nInvalid amount!";
+        }
+    }
+    pressKey();
+}
+
+void withdraw() {
+    clearScreen();
+    showHeader();
+    setColor(11);
+    if(selectedLanguage == 2) {
+        cout << "\nNikalne ki raqam darj karein: $";
+    } else {
+        cout << "\nWithdraw amount: $";
+    }
+    double amount;
+    cin >> amount;
+    if (amount > balance) {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nBalance nakafi hai!";
+        } else {
+            cout << "\nNot enough funds!";
+        }
+    } else if (amount <= 0) {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nGhalat raqam!";
+        } else {
+            cout << "\nInvalid amount!";
+        }
+    } else {
+        balance -= amount;
+        setColor(10);
+        if(selectedLanguage == 2) {
+            cout << "\nNikaasi safalta se ho gayi! Naya balance: $" << balance;
+        } else {
+            cout << "\nWithdrawal success! New balance: $" << balance;
+        }
+    }
+    pressKey();
+}
+
+void otherServices() {
+    while (true) {
+        clearScreen();
+        showHeader();
+        setColor(14);
+        if(selectedLanguage == 2) {
+            cout << "\n\t\t\t\t\t\tAwr Khidmaat:\n\n";
+            setColor(10);
+            cout << "\t\t 1. PIN Tabdeeli\n\n";
+            cout << "\t\t 2. Mini Statement\n\n";
+            cout << "\t\t 3. Cheque Book Darkhwast\n\n";
+            cout << "\t\t 4. Account Maloomat\n\n";
+            cout << "\t\t 5. Wapas\n\n";
+            setColor(11);
+            cout << "\nApna intikhab darj karein: ";
+        } else {
+            cout << "\n\t\t\t\t\t\tOther Services:\n\n";
+            setColor(10);
+            cout << "\t\t 1. PIN Change\n\n";
+            cout << "\t\t 2. Mini Statement\n\n";
+            cout << "\t\t 3. Cheque Book Request\n\n";
+            cout << "\t\t 4. Account Info\n\n";
+            cout << "\t\t 5. Back\n\n";
+            setColor(11);
+            cout << "\nEnter your choice: ";
+        }
+        int opt;
+        string tempInput;
+        while (true) {
+            cin >> tempInput;
+            if (isNumber(tempInput)) {
+                opt = stoi(tempInput);
+                if (opt >= 1 && opt <= 5) break;
+            }
+            setColor(12);
+            if(selectedLanguage==2)
+                cout << "\nGhalat intikhab! Dobara koshish karein: ";
+            else
+                cout << "\nInvalid option! Please try again: ";
+            setColor(11);
+        }
+
+        if (opt == 5) return;
+
+        switch (opt) {
+            case 1: {
+                clearScreen();
+                showHeader();
+                setColor(14);
+                if(selectedLanguage == 2) {
+                    cout << "\n\t\t\tPIN Tabdeeli:\n\n";
+                    setColor(11);
+                    cout << "Naya 4 hase ka PIN darj karein: ";
+                } else {
+                    cout << "\n\t\t\tPIN Change:\n\n";
+                    setColor(11);
+                    cout << "Enter New 4-digit PIN: ";
+                }
+                string newPin;
+                cin >> newPin;
+                if (newPin.length() == 4) {
+                    pass = newPin;
+                    setColor(10);
+                    if(selectedLanguage == 2) {
+                        cout << "\nPIN safalta se tabdeel ho gaya.";
+                    } else {
+                        cout << "\nPIN changed successfully.";
+                    }
+                } else {
+                    setColor(12);
+                    if(selectedLanguage == 2) {
+                        cout << "\nPIN ki lambai ghalat hai! Sirf 4 hase honi chahiye.";
+                    } else {
+                        cout << "\nInvalid PIN length! Must be 4 digits.";
+                    }
+                }
+                pressKey();
+                break;
+            }
+            case 2: {
+                clearScreen();
+                showHeader();
+                setColor(14);
+                if(selectedLanguage == 2) {
+                    cout << "\n\t\t\tMini Statement:\n\n";
+                    setColor(11);
+                    cout << "Balance: $" << balance << "\n";
+                    cout << "Akhri transaction: N/A (demo)\n";
+                } else {
+                    cout << "\n\t\t\tMini Statement:\n\n";
+                    setColor(11);
+                    cout << "Balance: $" << balance << "\n";
+                    cout << "Last transaction: N/A (demo)\n";
+                }
+                pressKey();
+                break;
+            }
+            case 3: {
+                clearScreen();
+                showHeader();
+                setColor(14);
+                if(selectedLanguage == 2) {
+                    cout << "\n\t\t\tCheque Book Darkhwast:\n\n";
+                    setColor(11);
+                    cout << "Aap ki cheque book ki darkhwast jama ho gayi hai.\n";
+                } else {
+                    cout << "\n\t\t\tCheque Book Request:\n\n";
+                    setColor(11);
+                    cout << "Your cheque book request has been submitted.\n";
+                }
+                pressKey();
+                break;
+            }
+            case 4: {
+                clearScreen();
+                showHeader();
+                setColor(14);
+                if(selectedLanguage == 2) {
+                    cout << "\n\t\t\tAccount Maloomat:\n\n";
+                    setColor(11);
+                    cout << "Account Number: 1234567890123456\n";
+                    cout << "Balance: $" << balance << "\n";
+                    cout << "Linked Mobile: +1234567890\n";
+                } else {
+                    cout << "\n\t\t\tAccount Info:\n\n";
+                    setColor(11);
+                    cout << "Account Number: 1234567890123456\n";
+                    cout << "Balance: $" << balance << "\n";
+                    cout << "Linked Mobile: +1234567890\n";
+                }
+                pressKey();
+                break;
+            }
+        }
+    }
+}
+
+int enterPIN() {
+    clearScreen();
+    showHeader();
+
+    string inputPin;
+    char ch;
+    if(selectedLanguage == 2) {
+        cout << "Apna 4 hase ka PIN darj karein: ";
+    } else {
+        cout << "Enter your 4-digit PIN: ";
+    }
+    while (inputPin.length() < 4) {
+        ch = _getch();
+        if (ch >= '0' && ch <= '9') {
+            inputPin.push_back(ch);
+            cout << '*';
+        } else if (ch == '\b' && !inputPin.empty()) {
+            inputPin.pop_back();
+            cout << "\b \b";
+        }
+    }
+    cout << endl;
+
+    if (inputPin == pass) {
+        setColor(10);
+        if(selectedLanguage == 2) {
+            cout << "\nDakhla ki izin mil gayi.";
+        } else {
+            cout << "\nAccess granted.";
+        }
+        Sleep(1500);
+        return 1;
+    } else {
+        setColor(12);
+        if(selectedLanguage == 2) {
+            cout << "\nPIN ghalat hai.";
+        } else {
+            cout << "\nIncorrect PIN.";
+        }
+        Sleep(1500);
+        return 0;
+    }
+}
+
+void welcomeScreen() {
+    while (true) {
+        clearScreen();
+        showHeader();
+        setColor(14);
+        if(selectedLanguage == 2) {
+            cout << setw(68) << "KHUSH AMDEED\n\n";
+            cout << setw(78) << "Tamaam len den shuru karne ke liye:\n\n\n\n";
+            cout << "\n\n\n\n\t\t 1. Apna card insert karein" << "\t\t\t\t\t\t 2. Apna thumb scan karein\n\n\n";
+            cout << "\n\n\n\t\t Intikhab: ";
+            string tempInput;
+            int opt;
+            while (true) {
+                cin >> tempInput;
+                if (isNumber(tempInput)) {
+                    opt = stoi(tempInput);
+                    if (opt == 1 || opt == 2) break;
+                }
+                setColor(12);
+                cout << "\nGhalat input! Dobara koshish karein: ";
+                setColor(11);
+            }
+            if (opt == 1) {
+                insertCard();
+                break;
+            } else if (opt == 2) {
+                scanThumb();
+                break;
+            }
+        } else {
+            cout << setw(68) << "WELCOME\n\n";
+            cout << setw(78) << "To initiate a transaction:\n\n\n\n";
+            cout << "\n\n\n\n\t\t 1. Insert your card" << "\t\t\t\t\t\t 2. Scan your thumb\n\n\n";
+            cout << "\n\n\n\t\t Choice: ";
+            string tempInput;
+            int opt;
+            while (true) {
+                cin >> tempInput;
+                if (isNumber(tempInput)) {
+                    opt = stoi(tempInput);
+                    if (opt == 1 || opt == 2) break;
+                }
+                setColor(12);
+                cout << "\nInvalid input! Please try again: ";
+                setColor(11);
+            }
+            if (opt == 1) {
+                insertCard();
+                break;
+            } else if (opt == 2) {
+                scanThumb();
+                break;
+            }
+        }
+    }
+}
+
+void selectLanguage() {
+    while (true) {
+        showHeader();
+        setColor(14);
+        cout << "\n\n\n\n\t\t\t\t\t\tPlease select your language:\n\n\n\n\n";
+        cout << "\n\t\t 1. English" << "\t\t\t\t\t\t\t\t2. Urdu\n\n\n\n\n";
+        cout << "\t\t Choice: ";
+        string tempInput;
+        while (true) {
+            cin >> tempInput;
+            if (isNumber(tempInput)) {
+                selectedLanguage = stoi(tempInput);
+                if (selectedLanguage == 1 || selectedLanguage == 2) break;
+            }
+            setColor(12);
+            cout << "\nInvalid input! Please try again: ";
+            setColor(11);
+        }
+        break;
+    }
+    clearScreen();
+}
+
+void mainServiceMenuEnglish() {
+    while (true) {
+        clearScreen();
+        showHeader();
+        setColor(14);
+        cout << "\n\n\t\t\t\t\t\tPlease Select a Transaction:\n\n\n\n\n";
+        setColor(10);
+        cout << "\t\t 1. Cash Withdrawal\t\t\t\t\t2. Make a Payment\n\n\n";
+        cout << "\t\t 3. Fund Transfer\t\t\t\t\t4. Balance Inquiry\n\n\n";
+        cout << "\t\t 5. Deposit Money\t\t\t\t\t6. Other Services\n\n\n";
+        cout << "\t\t 7. Exit\n\n";
+        setColor(11);
+        cout << "\n\n\t\t Your choice: ";
+        string tempInput;
+        int choice;
+        while (true) {
+            cin >> tempInput;
+            if (isNumber(tempInput)) {
+                choice = stoi(tempInput);
+                if (choice >= 1 && choice <= 7) break;
+            }
+            setColor(12);
+            cout << "\nInvalid option!\n\n";
+            pressKey();
+            setColor(11);
+            cout << "\n\n\t\t Your choice: ";
+        }
+        switch (choice) {
+            case 1: withdraw(); break;
+            case 2: makePayment(); break;
+            case 3: transferFunds(); break;
+            case 4: checkBalance(); break;
+            case 5: deposit(); break;
+            case 6: otherServices(); break;
+            case 7:
+                setColor(14);
+                cout << "\n\nThanks for using our ATM!\n\n\n\n";
+                exit(0);
+        }
+    }
+}
+
+void mainServiceMenuUrdu() {
+    while (true) {
+        clearScreen();
+        showHeader();
+        setColor(14);
+        cout << "\n\n\t\t\t\t\t\tLen Den ka intikhab karein:\n\n\n\n\n";
+        setColor(10);
+        cout << "\t\t 1. Cash Nikaalna\t\t\t\t\t2. Adaigi Karein\n\n\n";
+        cout << "\t\t 3. Fund Transfer\t\t\t\t\t4. Balance Maloomat\n\n\n";
+        cout << "\t\t 5. Paisa Jama Karein\t\t\t\t\t6. Awr Khidmaat\n\n\n";
+        cout << "\t\t 7. Kharij\n\n";
+        setColor(11);
+        cout << "\n\n\t\t Apna intikhab darj karein: ";
+        string tempInput;
+        int choice;
+        while (true) {
+            cin >> tempInput;
+            if (isNumber(tempInput)) {
+                choice = stoi(tempInput);
+                if (choice >= 1 && choice <= 7) break;
+            }
+            setColor(12);
+            cout << "\nGhalat intikhab!\n\n";
+            pressKey();
+            setColor(11);
+            cout << "\n\n\t\t Apna intikhab darj karein: ";
+        }
+        switch (choice) {
+            case 1: withdraw(); break;
+            case 2: makePayment(); break;
+            case 3: transferFunds(); break;
+            case 4: checkBalance(); break;
+            case 5: deposit(); break;
+            case 6: otherServices(); break;
+            case 7:
+                setColor(14);
+                cout << "\n\nHamare ATM ka istemal karne ka shukriya!\n\n\n\n";
+                exit(0);
+        }
+    }
+}
+
+int main() {
+    welcomeScreen();
+    selectLanguage();
+
+    if (enterPIN() == 1) {
+        if (selectedLanguage == 1) {
+            mainServiceMenuEnglish();
+        } else {
+            mainServiceMenuUrdu();
+        }
+    } else {
+        if(selectedLanguage == 2) {
+            cout << "\nCard Block ho gaya! Bank se raabta karein.";
+        } else {
+            cout << "\nCard Blocked! Contact the bank.";
+        }
+    }
+
+    return 0;
+}
